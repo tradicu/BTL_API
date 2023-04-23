@@ -216,8 +216,12 @@
     <Content Include="resource\css\bootstrap.min.css" />
     <Content Include="resource\css\dist\css\bootstrap.css" />
     <Content Include="resource\css\site.css" />
+    <Content Include="resource\img\Dem.png" />
     <Content Include="resource\img\logo-header.png" />
     <Content Include="resource\img\news-image.jpg" />
+    <Content Include="resource\img\Ngay.png" />
+    <Content Include="resource\img\Sang.png" />
+    <Content Include="resource\img\Toi.png" />
     <Content Include="resource\js\bootstrap.bundle.min.js" />
     <Content Include="resource\js\geo.js" />
     <Content Include="resource\js\index.umd.js" />
@@ -391,6 +395,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="WeatherServices\CurrentWeather.js" />
     <Content Include="WeatherServices\CurrentWeatherDetail.js" />
+    <Content Include="WeatherServices\HourlyWeather.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -410,6 +415,7 @@
     <Content Include="Views\ThoiTiet\BayNgayToi.cshtml" />
     <Content Include="Views\TinTuc\Index.cshtml" />
     <Content Include="Views\ThoiTiet\Index.cshtml" />
+    <Content Include="Views\ThoiTiet\TheoGio.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

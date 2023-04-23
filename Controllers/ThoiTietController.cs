@@ -54,21 +54,5 @@ namespace BTL_api.Controllers
             ViewBag.Act = "Năm Ngày Tới";
             return View();
         }
-        public ActionResult BayNgayToi(string place, float lon, float lat)
-        {
-            ViewBag.lon = lon;
-            ViewBag.lat = lat;
-            ViewBag.Place = place;
-            ViewBag.Act = "Bảy Ngày Tới";
-            return View();
-        }
-        public ActionResult MuoiNgayToi(string place, float lon, float lat)
-        {
-            ViewBag.lon = lon;
-            ViewBag.lat = lat;
-            ViewBag.Place = place;
-            ViewBag.Act = "Mười Ngày Tới";
-            return View();
-        }
     }
 }
