@@ -11,17 +11,12 @@
 <div id="chart1" style="width: 80%; height: 400px; margin: 0 auto"></div>
 
 @* link windy *@
-<script src="~/WeatherServices/windy.js"></script>
+
 <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
 <script src="https://api.windy.com/assets/map-forecast/libBoot.js"></script>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/leaflet.fullscreen.min.css" integrity="sha384-q2Qyoh3q4wEyvF+atGLdYX9zyZMDcCQLbkwiaIjLHZ8bGDLyklHzwUmIvBuM1/xC" crossorigin="">
-<script src="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/Leaflet.fullscreen.min.js" integrity="sha384-Y3qNg3hVLYAtWbJN7zRZOjOBlgCCVro/8H94gg1U6pbl/NzjOMUc0JY6aDRk5+5Q" crossorigin=""></script>
-
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/10.3.3/highcharts.js" integrity="sha512-8cJ3Lf1cN3ld0jUEZy26UOg+A5YGLguP6Xi6bKLyYurrxht+xkLJ9oH9rc7pvNiYsmYuTvpe3wwS6LriK/oWDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
 <script>
     function getCurrentWeather() {
         // Lấy vị trí hiện tại của người dùng
@@ -410,6 +405,8 @@
                      </div>
                  </div>
              </div>
+    <p style="font-size:16px;margin:5px;">Bản đồ Windy</p>
+    <div id="windy" style="width: 417px;height: 450px;"></div>
              <div class="card mt-3 sunrise" style="background-image:url(../resource/img/sunrise-sunset-bg.jpg)">
                  <div class="card-body">
                      <h2 class="font-h2">
@@ -482,5 +479,80 @@
         getCurrentWeather();
     });
 </script>
+<script>
+
+    const options = {
+        key: '7kYbFRfWpWle2AlQoD75rmxz4FBnZlEa', // REPLACE WITH YOUR KEY !!!
+        lat: 21.0245,
+        lon: 105.8412,
+        //const overlays = ['rain', 'wind', 'temp', 'clouds'];
+        //overlay: 'rain', //thay đổi màu theo thời tiết: gió, mây,...
+        timestamp: "2021-09-01T12:00:00Z", //thời điểm bạn muốn hiển thị thông tin dữ liệu
+        level: "surface", //để hiển thị dữ liệu trên mức bề mặt.
+        zoom: 5,
+    };
+
+    windyInit(options, windyAPI => {
+        const {
+            picker,
+            utils, //chuyển dữ liệu thời tiết từ 1 mảng  thành 1 đối tượng
+            broadcast, //lưu trữ và quản lý dữ liệu
+            store
+        } = windyAPI;
+        // windyAPI.broadcast.setView([lat, lon], 10);
+        picker.on('pickerOpened', ({
+            lat,
+            lon,
+            values,
+            overlay
+        }) => {
+            // -> 48.4, 14.3, [ U,V, ], 'wind'
+            console.log('opened', lat, lon, values, overlay);
+            //sử dụng hàm `wind2obj()` trong đối tượng `utils` của Windy API.
+            const windObject = utils.wind2obj(values);
+            console.log(windObject);
+        });
+
+        picker.on('pickerMoved', ({
+            lat,
+            lon,
+            values, //Giá trị thông tin thời tiết tại vị trí được chọn, được biểu diễn dưới dạng một mảng chứa các gía trị vector của gió tại đó.
+            overlay
+        }) => {
+            // picker was dragged by user to latLon coords
+            console.log('moved', lat, lon, values, overlay);
+        });
+
+        picker.on('pickerClosed', () => {
+            // picker was closed
+        });
+        // Lưu lại tọa độ thay đổi
+        store.on('pickerLocation', ({
+            lat,
+            lon
+        }) => {
+            console.log(lat, lon);
+
+            const {
+                values,
+                overlay
+            } = picker.getParams();
+            console.log('location changed', lat, lon, values, overlay);
+        });
+
+        // ạo và hiển thị picker
+        broadcast.once('redrawFinished', () => {
+            // tọa độ cắm cọc
+            picker.open({
+                lat: 21.0245,
+                lon: 105.8412
+            });
+        });
+    });
+
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/leaflet.fullscreen.min.css" integrity="sha384-q2Qyoh3q4wEyvF+atGLdYX9zyZMDcCQLbkwiaIjLHZ8bGDLyklHzwUmIvBuM1/xC" crossorigin="">
+<script src="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/Leaflet.fullscreen.min.js" integrity="sha384-Y3qNg3hVLYAtWbJN7zRZOjOBlgCCVro/8H94gg1U6pbl/NzjOMUc0JY6aDRk5+5Q" crossorigin=""></script>
+
 
 
