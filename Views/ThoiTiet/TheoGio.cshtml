@@ -29,10 +29,22 @@
             <div class="card mt-3">
                 <div class="card-body">
                     <h2 class="font-h2">
-                        Nhiệt độ và khả năng có mưa @ViewBag.Place trong 12h tới
+                        Khả năng có mưa @ViewBag.Place 24h
                     </h2>
                     <div class="chart-container bg-white">
-                        <canvas id="rainHour" width="528" height="263" style="display: block; box-sizing: border-box; height: 210.4px; width: 422.4px;"></canvas>
+                        <div id="chart1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/10.3.3/highcharts.js" integrity="sha512-8cJ3Lf1cN3ld0jUEZy26UOg+A5YGLguP6Xi6bKLyYurrxht+xkLJ9oH9rc7pvNiYsmYuTvpe3wwS6LriK/oWDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h2 class="font-h2">
+                        Nhiệt độ @ViewBag.Place 24h
+                    </h2>
+                    <div class="chart-container bg-white">
+                        <div id="chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                     </div>
                 </div>
             </div>

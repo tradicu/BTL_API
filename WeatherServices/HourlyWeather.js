@@ -3,6 +3,13 @@ var place = document.getElementById("mydata").dataset.place;
 var lon = document.getElementById("mydata").dataset.lon;
 var lat = document.getElementById("mydata").dataset.lat;
 
+
+//mảng lưu ngày
+var arrGio1 = [];
+//mảng lưu data
+var dataBieuDo1 = [];
+var dataMua1 = [];
+
 function getCurrentWeatherDetail() {
     // Gửi yêu cầu đến API để lấy dữ liệu thời tiết
     $.ajax({
@@ -22,7 +29,7 @@ function getCurrentWeatherDetail() {
             var feels_like = data.current.feelslike_c;
             var humidity = data.current.humidity;
             var vis_km = data.current.vis_km;
-            var wind_kph = data.current.wind_kph;
+            var wind_kph = (data.current.wind_kph * 1.609344).toFixed(2);
             var uv = data.current.uv;
             var temp_min = data.forecast.forecastday[0].day.mintemp_c;
             var temp_max = data.forecast.forecastday[0].day.maxtemp_c;
@@ -106,7 +113,7 @@ function getCurrentWeatherDetail() {
 }
 
 
-function Weather_by_48_hours() {
+function Weather_by_48_hours_a() {
     // Gửi yêu cầu đến API để lấy dữ liệu thời tiết
     $.ajax({
         url: `https://api.weatherapi.com/v1/forecast.json?key=cf4433948c49480fb79143448232003&q=${lat},${lon}&days=2&aqi=yes&alerts=yes&lang=vi`,
@@ -126,17 +133,26 @@ function Weather_by_48_hours() {
                     var src_icon = data.forecast.forecastday[ngay].hour[gio].condition.icon;
                     var description = data.forecast.forecastday[ngay].hour[gio].condition.text;
                     var chance_of_rain = data.forecast.forecastday[ngay].hour[gio].chance_of_rain;
-                    var wind_kmh = data.forecast.forecastday[ngay].hour[gio].wind_mph * 1.609344;
+                    var wind_kmh = (data.forecast.forecastday[ngay].hour[gio].wind_mph * 1.609344).toFixed(2);
                     // Lượng mưa
                     var precip_mm = data.forecast.forecastday[ngay].hour[gio].precip_mm;
                     // Áp suất
-                    var pressure_mmHg = data.forecast.forecastday[ngay].hour[gio].pressure_mb * 0.75006157584566;
+                    var pressure_mmHg = (data.forecast.forecastday[ngay].hour[gio].pressure_mb * 0.75006157584566).toFixed(2);
                     // UV
                     var uv = data.forecast.forecastday[ngay].hour[gio].uv;
                     // Tầm nhìn
                     var vis_km = data.forecast.forecastday[ngay].hour[gio].vis_km;
 
-                    console.log(time, temp_c, src_icon, description, chance_of_rain, wind_kmh, precip_mm, pressure_mmHg, uv, vis_km);
+                    if (ngay == 0) {
+                        //Array time
+                        arrGio1.push(time);
+                        //Array temp
+                        dataBieuDo1.push(temp_c);
+                        //Array luong mua
+                        dataMua1.push(chance_of_rain);
+                    }
+
+                    //console.log(time, temp_c, src_icon, description, chance_of_rain, wind_kmh, precip_mm, pressure_mmHg, uv, vis_km);
                     // Tạo chuỗi html
                     str = `<details class="weather-day text-dark">
                             <summary class="weather-summary text-dark" data-toggle="collapse" data-target="#detail-24-04-00-00" aria-expanded="false" aria-controls="detail-24-04-00-00">
@@ -232,8 +248,82 @@ function Weather_by_48_hours() {
                         </details>`;
                     html_48h += str;
                 }
+                console.log("arr giờ" + arrGio1);
+                console.log("arr nhiet do" + dataBieuDo1);
+                console.log("arr mua" + dataMua1);
             }
             $("#hourly-item").html(html_48h);
+
+            // Vẽ
+            $(function () {
+                Highcharts.chart('chart1', {
+                    title: {
+                        text: 'Khả năng có thể mưa',
+                    },
+                    xAxis: {
+                        categories: arrGio1
+                    },
+                    chart: {
+                        type: 'column'
+
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'mm'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        valueSuffix: 'mm'
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: [{
+                        data: dataMua1
+                    }]
+                });
+            });
+            $(function () {
+                Highcharts.chart('chart', {
+                    title: {
+                        text: 'Nhiệt độ',
+                    },
+                    xAxis: {
+                        categories: arrGio1
+                    },
+
+                    yAxis: {
+                        title: {
+                            text: 'Temperature (°C)'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        valueSuffix: '°C'
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: [{
+                        data: dataBieuDo1
+                    }]
+                });
+            });
 
         },
         error: function () {
@@ -246,6 +336,6 @@ function Weather_by_48_hours() {
 
 $(document).ready(function () {
     getCurrentWeatherDetail();
-    Weather_by_48_hours();
-  
+    Weather_by_48_hours_a();
+
 })
