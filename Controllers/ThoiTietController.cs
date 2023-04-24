@@ -30,23 +30,21 @@ namespace BTL_api.Controllers
             ViewBag.Act = "Theo Giờ";
             return View();
         }
-        public ActionResult NgayMai(string place, float lon, float lat)
+        public ActionResult NgayMai(float lon, float lat)
         {
             ViewBag.lon = lon;
             ViewBag.lat = lat;
-            ViewBag.Place = place;
             ViewBag.Act = "Ngày Mai";
             return View();
         }
-        public ActionResult BaNgayToi(string place, float lon, float lat)
+        public ActionResult BaNgayToi(float lon, float lat)
         {
             ViewBag.lon = lon;
             ViewBag.lat = lat;
-            ViewBag.Place = place;
             ViewBag.Act = "Ba Ngày Tới";
             return View();
         }
-        public ActionResult NamNgayToi(string place, float lon, float lat)
+        public ActionResult NamNgayToi(string place,float lon, float lat)
         {
             ViewBag.lon = lon;
             ViewBag.lat = lat;

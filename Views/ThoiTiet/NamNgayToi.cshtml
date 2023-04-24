@@ -1,0 +1,486 @@
+﻿
+@{
+    ViewBag.Title = "NamNgayToi";
+    Layout = "~/Views/Shared/_LayoutChiTiet.cshtml";
+}
+<h1 id="tuan" style="visibility:hidden">@ViewBag.Place</h1>
+<div id="main" class="mt-3">
+
+</div>
+@* bieu do *@
+<div id="chart1" style="width: 80%; height: 400px; margin: 0 auto"></div>
+
+@* link windy *@
+<script src="~/WeatherServices/windy.js"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+<script src="https://api.windy.com/assets/map-forecast/libBoot.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/leaflet.fullscreen.min.css" integrity="sha384-q2Qyoh3q4wEyvF+atGLdYX9zyZMDcCQLbkwiaIjLHZ8bGDLyklHzwUmIvBuM1/xC" crossorigin="">
+<script src="https://unpkg.com/leaflet-fullscreen@1.4.5/dist/Leaflet.fullscreen.min.js" integrity="sha384-Y3qNg3hVLYAtWbJN7zRZOjOBlgCCVro/8H94gg1U6pbl/NzjOMUc0JY6aDRk5+5Q" crossorigin=""></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script>
+    function getCurrentWeather() {
+        // Lấy vị trí hiện tại của người dùng
+        var x = document.getElementById("tuan").innerHTML;
+        // Gửi yêu cầu đến API để lấy dữ liệu thời tiết
+        $.ajax({
+            url: `https://api.openweathermap.org/data/2.5/forecast?q=${x}&appid=beb12a9c79cbb1ada4fd8303c5e4deb6&units=metric&lang=vi`,
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                var strHtml = ``;
+                //có mưa hay không
+                var str3 = ``;
+                var luongmua = 0
+                //mảng lưu ngày
+                var myArray = [];
+                //mảng lưu data
+                var dataBieuDo = [];
+                for (var i = 0; i < data.list.length; i += 8) {
+                    //format ngày và push vào 1 mảng
+                    var inputDate = data.list[i].dt_txt;
+                    var formattedDate = new Date(inputDate).toLocaleDateString('en-GB');
+                    myArray.push(formattedDate);
+                    dataBieuDo.push(data.list[i].main.temp);
+                    //có mưa
+                    if (data.list[i].weather[0].main == 'Rain') {
+                        luongmua = data.list[i].rain['3h'];
+                        str3 = ` <div class="d-flex flex-wrap">
+                                           <div class="overview-current">
+                                               <img src="https://file.thoitiet.edu.vn/thoitietedu/icons/10d@2x.png" alt="Mưa nhẹ">
+                                                   <span class="current-temperature">
+                                                       ${data.list[i].main.temp}
+                                                   </span>
+                                           </div>
+                                           <div class="overview-caption mx-3">
+                                               <p class="overview-caption-item overview-caption-item-detail">
+                                                    ${data.list[i].weather[0].description}
+                                               </p>
+                                               <p class="overview-caption-item overview-caption-summary-detail">Cảm giác như ${data.list[i].main.feels_like}.</p>
+                                           </div>
+                                       </div>`
+                    }
+                    //không mưa
+                    else {
+                        str3 = ` <div class="d-flex flex-wrap">
+                                           <div class="overview-current">
+                                               <img src="https://file.thoitiet.edu.vn/thoitietedu/icons/03d@2x.png" alt="Mưa nhẹ">
+                                                   <span class="current-temperature">
+                                                       ${data.list[i].main.temp}
+                                                   </span>
+                                           </div>
+                                           <div class="overview-caption mx-3">
+                                               <p class="overview-caption-item overview-caption-item-detail">
+                                                    ${data.list[i].weather[0].description}
+                                               </p>
+                                               <p class="overview-caption-item overview-caption-summary-detail">Cảm giác như ${data.list[i].main.feels_like}.</p>
+                                           </div>
+                                       </div>`
+                    }
+                    //chuôi hiển thị thời tiết 5 ngày
+                    var str1 = ` <div class="weather-date shadow-sm">
+                           <h2 class="font-size-18 weather-date-title pt-2 m-auto">
+                               <span>${formattedDate}</span>
+                           </h2>
+                           <div class="row">
+                               <div class="col-12 col-md-6">
+                                   <div class="rounded p-3 weather-date-left">
+
+                                      ${str3}
+
+                                       <ul class="list-group list-group-flush">
+                                           <li class="list-group-item d-flex justify-content-between align-items-start">
+                                               <div class="d-flex ms-2 me-auto">
+                                                   <div class="avatar">
+                                                       <div class="avatar-img rounded-circle">
+                                                           <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="temp" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Nhiệt độ</title><path d="M10.333 15.48v.321c.971.357 1.667 1.322 1.667 2.456 0 1.438-1.12 2.604-2.5 2.604S7 19.695 7 18.257c0-1.134.696-2.099 1.667-2.456v-.322a2.084 2.084 0 0 1-1.25-1.91V5.583a2.083 2.083 0 1 1 4.166 0v7.986c0 .855-.514 1.589-1.25 1.91zM15.8 8.1a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6zm0-1.85a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path></svg>
+                                                       </div>
+                                                   </div>
+                                                   <span class="fw-bold">
+                                                       Thấp/Cao
+                                                   </span>
+                                               </div>
+                                               <span class="">${data.list[i].main.temp_min}/${data.list[i].main.temp_max}</span>
+                                           </li>
+                                           <li class="list-group-item d-flex justify-content-between align-items-start">
+                                               <div class="d-flex ms-2 me-auto">
+                                                   <div class="avatar">
+                                                       <div class="weather-icon">
+                                                           <i class="bi bi-droplet"></i>
+                                                       </div>
+                                                   </div>
+                                                   <span class="fw-bold">
+                                                       Độ ẩm
+                                                   </span>
+                                               </div>
+                                               <span class="">${data.list[i].main.humidity} %</span>
+                                           </li>
+                                           <li class="list-group-item d-flex justify-content-between align-items-start">
+                                               <div class="d-flex ms-2 me-auto">
+                                                   <div class="avatar">
+                                                       <div class="weather-icon">
+                                                           <i class="bi bi-cloud-rain"></i>
+                                                       </div>
+                                                   </div>
+                                                   <span class="fw-bold">
+                                                       Lượng mưa
+                                                   </span>
+                                               </div>
+                                               <span class="">${luongmua} mm</span>
+                                           </li>
+                                       </ul>
+                                   </div>
+                               </div>
+                               <div class="col-12 col-md-6">
+                                   <ul class="list-group list-group-flush">
+                                       <li class="list-group-item d-flex justify-content-between align-items-start">
+                                           <div class="d-flex ms-2 me-auto">
+                                               <div class="avatar">
+                                                   <div class="avatar-img rounded-circle">
+                                                       <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="temp" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Nhiệt độ</title></svg>
+                                                   </div>
+                                               </div>
+                                               <span class="fw-bold">
+                                                   Ngày/Đêm
+                                               </span>
+                                           </div>
+                                           <span class="">${data.list[i].main.temp_min}/${data.list[i].main.temp_max}</span>
+                                       </li>
+                                       <li class="list-group-item d-flex justify-content-between align-items-start">
+                                           <div class="d-flex ms-2 me-auto">
+                                               <div class="avatar">
+                                                   <div class="avatar-img rounded-circle">
+                                                       <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="temp" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Nhiệt độ</title></svg>
+                                                   </div>
+                                               </div>
+                                               <span class="fw-bold">
+                                                   Sáng/Tối
+                                               </span>
+                                           </div>
+                                           <span class="">${data.list[i].main.temp_min}/${data.list[i].main.feels_like}</span>
+                                       </li>
+                                       <li class="list-group-item d-flex justify-content-between align-items-start">
+                                           <div class="d-flex ms-2 me-auto">
+                                               <div class="avatar">
+                                                   <div class="avatar-img rounded-circle">
+                                                       <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="pressure" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Áp suất</title></svg>
+                                                   </div>
+                                               </div>
+                                               <span class="fw-bold">
+                                                   Áp suất
+                                               </span>
+                                           </div>
+                                           <span class="">750.81 mmhg</span>
+                                       </li>
+                                       <li class="list-group-item d-flex justify-content-between align-items-start">
+                                           <div class="d-flex ms-2 me-auto">
+                                               <div class="avatar">
+                                                   <div class="avatar-img rounded-circle">
+                                                       <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="wind" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Wind</title></svg>
+                                                   </div>
+                                               </div>
+                                               <span class="fw-bold">
+                                                   Gió
+                                               </span>
+                                           </div>
+                                           <span class="">
+                                               ${data.list[i].wind.speed} km/h
+                                           </span>
+                                       </li>
+                                       <li class="list-group-item d-flex justify-content-between align-items-start">
+                                           <div class="d-flex ms-2 me-auto">
+                                               <div class="avatar">
+                                                   <span class="weather-icon">
+                                                       <i class="bi bi-sun"></i>
+                                                   </span>
+                                               </div>
+                                               <span class="fw-bold">
+                                                   Bình minh/Hoàng hôn
+                                               </span>
+                                           </div>
+                                           <div class="d-flex ml-auto align-items-center">
+                                               <div class="weather-sun">
+                                                   <span><i class="bi bi-sunrise"></i>05:30 AM</span>
+                                                   <span>
+                                                       <i class="bi bi-sunset"></i>
+                                                       06:17 PM
+                                                   </span>
+                                               </div>
+                                           </div>
+                                       </li>
+                                   </ul>
+                               </div>
+                           </div>
+                       </div>`  ;
+                    strHtml += str1;
+                }
+                //chuỗi bao
+                str = `
+    <div class="container" >
+        <div class="alert alert-primary no-border mb-0">
+            <nav style="--bs-breadcrumb-divider: '\\';" aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+
+                    <li class="breadcrumb-item" aria-current="page">
+                        <a href="/cao-bang">${data.city.name}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Thời tiết ${data.city.name} 5 ngày tới</li>
+                </ol>
+            </nav>
+        </div>
+ </div >
+
+ <div class="container">
+     <div class="row">
+         <div class="col-12 col-md-8">
+             <div class="card">
+                 <div class="card-body">
+                     <h1 class="card-title font-size-18">
+                         <a href="/cao-bang/5-ngay-toi">
+                             Thời tiết ${data.city.name} 5 ngày tới
+                         </a>
+                     </h1>
+
+                     ${strHtml}
+
+                 </div>
+             </div>
+             <div class="card mt-3">
+                 <div class="card-body">
+                     <h2 class="font-h2">
+                         Nhiệt độ và Khả năng có mưa ${data.city.name} 5 ngày tới
+                     </h2>
+                     <div class="chart-container bg-white">
+                         <canvas id="myChart" width="200" height="100"></canvas>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         <div class="col-12 col-md-4">
+             <div class="current-location">
+                 <div class="location-name">
+                     <h2 class="location-name-main font-h2">
+                         <a href="/cao-bang">
+                             Thời tiết ${data.city.name}
+                         </a>
+                     </h2>
+                 </div>
+                 <div class="location-data">
+                     <div class="location-data-summary">
+                         <div class="d-flex">
+                             <div class="overview-current">
+                                 <img src="https://file.thoitiet.edu.vn/thoitietedu/icons/01n@2x.png" class="me-2" alt="Bầu trời quang đãng" />
+                                 <span class="current-temperature">26°</span>
+                             </div>
+                             <div class="overview-caption ms-2">
+                                 <p class="overview-caption-item">Bầu trời quang đãng</p>
+                                 <p class="overview-caption-item">Cảm giác như 27°.</p>
+                             </div>
+                         </div>
+
+                         <div class="weather-detail mt-2">
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <span class="weather-icon">
+                                             <i class="bi bi-sun"></i>
+                                         </span>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Mặt trời mọc/lặn</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <div class="weather-sun">
+                                         <span><i class="bi bi-sunrise"></i>05:30</span>
+                                         <span>
+                                             <i class="bi bi-sunset"></i>
+                                             18:17
+                                         </span>
+
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="temp" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Nhiệt độ</title><p</svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Thấp/Cao</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">23°/38°</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <span class="weather-icon">
+                                             <i class="bi bi-droplet"></i>
+                                         </span>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Độ ẩm</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">${data.cnt}%</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="pressure" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Áp suất</title><path </svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Áp suất</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">752.31 mmhg</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="visibility" theme="dark" data-testid="Icon" aria-hidden="true" role="img" width="1024" height="1024" viewBox="0 0 1024 1024"><title>Tầm nhìn</title></svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Tầm nhìn</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">10 km</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="wind" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Wind</title></svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Gió</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">3.96 km/h</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="dewpoint" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>Điểm ngưng</title><path d="M17 8.1a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6zm0-1.85a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path><path fill-rule="evenodd" d="M9.743 18.912a4.182 4.182 0 0 1-2.928-1.182 3.972 3.972 0 0 1-.614-4.962.743.743 0 0 1 .646-.349c.234 0 .476.095.66.275l4.467 4.355c.385.376.39.998-.076 1.275a4.216 4.216 0 0 1-2.155.588M9.855 5c.316 0 .61.14.828.395.171.2.36.416.562.647 1.857 2.126 4.965 5.684 4.965 8.73 0 3.416-2.85 6.195-6.353 6.195-3.505 0-6.357-2.78-6.357-6.195 0-3.082 2.921-6.406 4.854-8.605.242-.275.47-.535.673-.772C9.245 5.14 9.54 5 9.855 5"></path></svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">Điểm ngưng</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">22 °</span>
+                                 </div>
+                             </div>
+                             <div class="separator-dashed"></div>
+                             <div class="d-flex">
+                                 <div class="avatar">
+                                     <div class="avatar-img rounded-circle">
+                                         <svg class="WeatherDetailsListItem--icon--NgMGn Icon--icon--2AbGu Icon--darkTheme--2U1o8" set="current-conditions" name="uv" theme="dark" data-testid="Icon" aria-hidden="true" role="img" viewBox="0 0 24 24"><title>UV Level</title><path d="M7.4 5.598a.784.784 0 0 1 .25-.92c.335-.256.824-.197 1.02.062.066.063.066.063.08.085l2.406 3.152-.626.238a3.983 3.983 0 0 0-1.097.633l-.522.424L7.4 5.598zm4.539 2.358c-.21 0-.418.017-.625.05l-.664.106.09-.666.438-3.266c.013-.072.013-.072.012-.057a.783.783 0 0 1 .666-.616.78.78 0 0 1 .872.639l.006.038.507 3.933-.662-.108a3.957 3.957 0 0 0-.64-.053zm-7.781 3.19l.026-.004 3.934-.507-.108.662a3.98 3.98 0 0 0-.003 1.266l.105.664-.665-.09-3.265-.439a.784.784 0 0 1-.676-.679c-.054-.42.238-.809.63-.869l.022-.004zm11.504-.617a3.98 3.98 0 0 0-.632-1.097l-.425-.522.623-.256 3.056-1.256a.787.787 0 0 1 .916.253c.256.337.199.817-.104 1.063l-.045.037-3.151 2.405-.238-.627zm-1.205-1.672a3.984 3.984 0 0 0-1.095-.637l-.626-.24.41-.532 2.008-2.602c.059-.07.059-.07.046-.052a.78.78 0 0 1 1.306.227c.076.185.079.39.02.54l-.021.06-1.528 3.662-.52-.426zM4.595 7.793c.162-.387.611-.58.971-.441.017.004.017.004.055.02L9.283 8.9l-.425.52a3.985 3.985 0 0 0-.636 1.094l-.24.627-3.144-2.425a.784.784 0 0 1-.243-.924zm14.443 7.367c.054.045.054.045.044.04a.784.784 0 0 1 .199.884c-.163.386-.61.58-.964.443-.024-.006-.024-.006-.062-.022l-3.662-1.529.426-.52a3.98 3.98 0 0 0 .636-1.094l.241-.626 3.142 2.424zm1.332-3.303c.053.422-.239.809-.63.87l-.035.006-3.945.508.108-.662a3.999 3.999 0 0 0 .003-1.266l-.105-.663.665.09 3.272.44c.068.012.068.012.052.01a.784.784 0 0 1 .615.667zm-3.894 6.421c.024.068.024.068.017.053a.786.786 0 0 1-.27.87c-.332.25-.816.194-1.047-.091-.022-.023-.022-.023-.05-.058l-2.406-3.154.626-.237a3.977 3.977 0 0 0 1.097-.632l.523-.425 1.51 3.674zm-8.26-4.932c.151.397.365.767.633 1.097l.424.522-.622.256-3.054 1.255a.787.787 0 0 1-.92-.25.781.781 0 0 1-.154-.58c.027-.199.127-.379.227-.452.045-.046.045-.046.075-.069l3.153-2.406.238.627zm3.723 2.572c.209 0 .417-.016.625-.049l.662-.103-.089.664-.438 3.26-.012.062a.785.785 0 0 1-.666.618c-.048.005-.048.005-.101.006-.386 0-.714-.28-.764-.612-.01-.043-.01-.043-.014-.072l-.507-3.934.662.108c.213.035.427.052.642.052zM7.366 18.27l.006-.015L8.9 14.592l.52.426a3.99 3.99 0 0 0 1.094.636l.626.241-.41.531-2.012 2.609-.04.046a.788.788 0 0 1-.886.2.787.787 0 0 1-.428-1.011z"></path><path d="M11.911 14.322a2.411 2.411 0 1 0 0-4.822 2.411 2.411 0 0 0 0 4.822zm0 2a4.411 4.411 0 1 1 0-8.822 4.411 4.411 0 0 1 0 8.822z"></path></svg>
+                                     </div>
+                                 </div>
+                                 <div class="flex-1 pt-1 ms-2">
+                                     <h3 class="fw-bold mb-1">UV</h3>
+                                 </div>
+                                 <div class="d-flex ms-auto align-items-center">
+                                     <span class="text-white op-8 fw-bold">0</span>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="card mt-3 sunrise" style="background-image:url(../resource/img/sunrise-sunset-bg.jpg)">
+                 <div class="card-body">
+                     <h2 class="font-h2">
+                         Bình minh / Hoàng hôn
+                     </h2>
+                     <div class="d-flex justify-content-between">
+                         <div class="sun-item">
+                             <span>
+                                 05:30
+                             </span>
+                         </div>
+                         <div class="sun-item">
+                             <span>
+                                 18:17
+                             </span>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+         </div>
+     </div>
+ </div>`;
+                /////----------------------------Biểu đồ ----------------------------------------------------------///
+                $(function () {
+                    Highcharts.chart('chart1', {
+                        title: {
+                            text: 'Biểu đồ nhiệt độ 5 ngày tới',
+                        },
+                        xAxis: {
+                            categories: [myArray[0], myArray[1], myArray[2], myArray[3], myArray[4],]
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Temperature (°C)'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 2,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            valueSuffix: '°C'
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle',
+                            borderWidth: 0
+                        },
+                        series: [{
+                            data: [dataBieuDo[0], dataBieuDo[1], dataBieuDo[2], dataBieuDo[3], dataBieuDo[4]
+                            ]
+                        }]
+                    });
+                });
+
+
+                $("#main").html(str);
+            },
+            error: function () {
+                alert("Không thể lấy thông tin thời tiết.");
+            }
+
+        });
+    }
+    $(document).ready(function () {
+        getCurrentWeather();
+    });
+</script>
+
+

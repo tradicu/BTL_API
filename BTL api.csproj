@@ -396,6 +396,9 @@
     <Content Include="WeatherServices\CurrentWeather.js" />
     <Content Include="WeatherServices\CurrentWeatherDetail.js" />
     <Content Include="WeatherServices\HourlyWeather.js" />
+    <Content Include="WeatherServices\ThreeDayWeather.js" />
+    <Content Include="WeatherServices\TommorowWeather.js" />
+    <Content Include="WeatherServices\windy.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -416,6 +419,10 @@
     <Content Include="Views\TinTuc\Index.cshtml" />
     <Content Include="Views\ThoiTiet\Index.cshtml" />
     <Content Include="Views\ThoiTiet\TheoGio.cshtml" />
+    <Content Include="Views\TinTuc\Detail.cshtml" />
+    <Content Include="Views\ThoiTiet\NgayMai.cshtml" />
+    <Content Include="Views\ThoiTiet\BaNgayToi.cshtml" />
+    <Content Include="Views\ThoiTiet\NamNgayToi.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
