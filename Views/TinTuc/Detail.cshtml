@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="container">
+    <div class="col-12 col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h1 id="title">
+                    <!-- Title goes here-->
+                </h1>
+                <ul id="article">
+                    <li id="author"></li>
+                    <li id="publishedAt"></li>
+                </ul>
+                <p id="description"></p>
+                <div class="cover-content-bottom" id="hourly-item">
+                    <div class="html-content">
+                        <!-- News image-->
+                        <p id="image-p" style="text-align: center;"></p>
+                        <!--Content -->
+                        <p id="content"></p>
+                        <!-- News url goes here-->
+                        <p>Nguồn:<a id="newsurl"></a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer mt-2">
+                <p class="card-title font-h3">Bạn có thể quan tâm</p>
+                <ul id="news" class="list-unstyled news-list">
+                    <!-- Other news goes here-->
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<div id="Index" data-index="@ViewBag.index"></div>
+<script>
+                    var index = document.getElementById("Index").dataset.index;
+                    if (index != "") {
+                        //alert(index);
+                        document.getElementById("Index").dataset.index = "";
+                    }
+                    const API_KEY = "b38ccf3fc2a8464ca490114081bfe456";
+                    function NewsDetail() {
+                        $.ajax({
+                            url: `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}&category=general`,
+                            method: "GET",
+                            dataType: "json",
+                            success: function (data) {
+                                console.log(data);
+                                var title = data.articles[index].title;
+                                var author = data.articles[index].author;
+                                var description = data.articles[index].description;
+                                var content = data.articles[index].content;
+                                var newsurl = data.articles[index].url;
+                                var publishedAt = data.articles[index].publishedAt;
+                                var imageUrl = data.articles[index].urlToImage;
+
+                                $("#title").text(`${title}`);
+                                $("#image-p").prepend(`<img src="${imageUrl}" class="img-fluid" width="800" height="509">`);
+                                $("#author").text(`${author}`);
+                                $("#description").text(`${description}`);
+                                $("#publishedAt").text(`${publishedAt}`);
+                                $("#content").text(`${content}`);
+                                $("#newsurl").attr("href", `${newsurl}`);
+                                $("#newsurl").text(`${newsurl}`);
+                            },
+                            error: function () {
+                                alert("Display News Failed!");
+                            }
+                        });
+                    }
+                    function DisplayOtherNews() {
+                        $.ajax({
+                            url: `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}&category=general`,
+                            method: "GET",
+                            dataType: "json",
+                            success: function (data) {
+                                var news_ul = document.getElementById('news');
+                                for (let i = 0; i < 3; i++) {
+
+                                    var index_news;
+                                    do {
+                                        index_news = Math.floor(Math.random() * 20);
+                                    } while (index_news == index);
+
+
+                                    var title = data.articles[index_news].title;
+                                    var imageUrl = data.articles[index_news].urlToImage;
+                                    str = `<li class="media">
+                                           <a href="/TinTuc/Detail?id=${index_news}" class="me-3">
+                                            <img src="${imageUrl}" class="img-fluid" ></a>
+                                            <div class="media-body">
+                                            <a href="/TinTuc/Detail?id=${index_news}" class="news-link">
+                                            <h3 class="title">
+                                            ${title}
+                                            </h3></a>
+                                            <a href="/TinTuc/Detail?id=${index_news}" class="news-category">Xem chi tiết</a>
+                                            </div>
+                                            </li>`;
+                                    news_ul.insertAdjacentHTML('beforeend', str);
+                                }
+                            },
+                            error: function () {
+                                alert("Display News Failed!");
+                            }
+                        })
+                    }
+                    $(document).ready(function () {
+                        NewsDetail();
+                        DisplayOtherNews();
+                    })
+</script>
+<style>
+    #title {
+        font-family: 'Noto Serif',serif;
+        font-size: 2.4em;
+        color: #000;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        margin: 10px 0;
+    }
+
+    #article {
+        margin: 15px 0 8px;
+        float: left;
+        width: 100%;
+        font-family: sans-serif;
+        font-size: 0.85em;
+        color: #888;
+    }
+
+        #article li {
+            display: inline-block;
+        }
+
+    #description {
+        font-weight: bold;
+        font-size: 1.3rem;
+        line-height: 1.6;
+        font-family: 'Noto Serif',serif;
+    }
+</style>
+

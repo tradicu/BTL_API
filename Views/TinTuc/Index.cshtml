@@ -29,6 +29,7 @@
                 // Xử lí dữ liệu
                 const articles = data.articles;
                 var news_ul = document.getElementById('news');
+                var index = 0;
                 articles.forEach(article => {
                     var title = article.title;
                     var imageUrl = article.urlToImage;
@@ -45,14 +46,15 @@
                                     </h3>
                                     <p style="color:black;">${description}</p>
                                 </a>
-                                <a href="#" class="news-category">Xem chi tiết</a>
+                                <a href="/TinTuc/Detail?id=${index}" class="news-category">Xem chi tiết</a>
                             </div>
                         </li>
                     `;
                     news_ul.insertAdjacentHTML('beforeend', newsItem);
+                    index = index + 1;
                 });
-             createPagination();
-             showPage(1);
+                createPagination();
+                showPage(1);
             },
             error: function () {
                 alert("Display News Failed!");
@@ -76,8 +78,8 @@
         const pagination = $('#pagination');
 
         for (let i = 1; i <= totalPages; i++) {
-            const li = $(' <button class="page-item">' + i + '</button>');
-            
+            const li = $(' <li class="page-item"><a href="#">' + i + '</a></li>');
+
             li.click(function () {
                 showPage(i);
             });
@@ -87,8 +89,38 @@
     }
     //
     $(document).ready(function () {
-        
+
         DisplayNews();
-        
+
     });
 </script>
+<style>
+    .pagination li {
+        display: inline-block;
+    }
+
+        .pagination li a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            border: 1px solid #ddd;
+        }
+
+            .pagination li a.active {
+                background-color: #4CAF50;
+                color: white;
+                border: 1px solid #4CAF50;
+            }
+
+            .pagination li a:hover:not(.active) {
+                background-color: #ddd;
+            }
+
+        .pagination li:first-child a {
+            background-color: #398bca;
+            color: white;
+            border: 1px solid #398bca;
+        }
+</style>

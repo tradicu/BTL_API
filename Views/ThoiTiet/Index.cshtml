@@ -275,37 +275,6 @@
         </div>
 
         <div class="col-12 col-md-4" style="height: auto !important;">
-
-            <!--Tin tức-->
-            <div class="current-location top-news mb-3">
-                <h2 class="font-h2">
-                    Tin tức Hà Nội
-                </h2>
-                <ul class="list-unstyled list-top-news">
-                    <li class="media my-1 pb-2 list-top-new-items">
-                        <img src="https://file.thoitiet.edu.vn/thoitietedu/2023/2/18/chua-huong-ha-noi.jpg" class="me-3" alt="Chùa Hương Hà Nội ở đâu? Review chùa Hương tại Hà Nội">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">Chùa Hương Hà Nội ở đâu? Review chùa Hương tại Hà Nội</h5>
-                        </div>
-                        <a rel="nofollow" href="/chua-huong-ha-noi-davkfrouayq.html" class="top-news-link"></a>
-                    </li>
-                    <li class="media my-1 pb-2 list-top-new-items">
-                        <img src="https://file.thoitiet.edu.vn/thoitietedu/2023/2/15/nha-hat-lon-ha-noi.jpg" class="me-3" alt="Nhà hát Lớn Hà Nội ở đâu? Hình ảnh nhà hát Lớn tại Hà Nội">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">Nhà hát Lớn Hà Nội ở đâu? Hình ảnh nhà hát Lớn tại Hà Nội</h5>
-                        </div>
-                        <a rel="nofollow" href="/nha-hat-lon-ha-noi-woqpupduxgk.html" class="top-news-link"></a>
-                    </li>
-                    <li class="media my-1 pb-2 list-top-new-items">
-                        <img src="https://file.thoitiet.edu.vn/thoitietedu/2022/12/26/dia-diem-vui-choi-ha-noi-min.jpg" class="me-3" alt="Những địa điểm vui chơi Hà Nội nức tiếng mà bạn không thể bỏ lỡ">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">Những địa điểm vui chơi Hà Nội nức tiếng mà bạn không thể bỏ lỡ</h5>
-                        </div>
-                        <a rel="nofollow" href="/dia-diem-vui-choi-ha-noi-ylbmhapulmz.html" class="top-news-link"></a>
-                    </li>
-                </ul>
-            </div>
-
             <!--Chất lượng không khí-->
             <div class="card">
                 <div class="card-body">
@@ -405,32 +374,12 @@
                         <h2 class="font-h2">
                             Tin tức mới nhất
                         </h2>
-                        <a href="/tong-hop" class="text-white-50">
+                        <a href="@Url.Action("Index", "TinTuc")" class="text-white-50">
                             Xem tất cả
                         </a>
                     </div>
-                    <ul class="list-unstyled list-top-news">
-                        <li class="media my-1 pb-2 list-top-new-items">
-                            <img src="https://file.thoitiet.edu.vn/thoitietedu/2023/4/21/du-bao-thoi-tiet-dem-nay-va-ngay-mai-22-04-2023.jpg" class="me-3" alt="Dự báo thời tiết đêm nay và ngày mai 22/04/2023">
-                            <div class="media-body">
-                                <h5 class="mt-0 mb-1">Dự báo thời tiết đêm nay và ngày mai 22/04/2023</h5>
-                            </div>
-                            <a rel="nofollow" href="/du-bao-thoi-tiet-dem-nay-va-ngay-mai-22-04-2023-pjqmhkbugqa.html" class="top-news-link"></a>
-                        </li>
-                        <li class="media my-1 pb-2 list-top-new-items">
-                            <img src="https://file.thoitiet.edu.vn/thoitietedu/2023/4/19/du-bao-thoi-tiet-dem-nay-va-ngay-mai-ngay-20-04-2023.jpg" class="me-3" alt="Dự báo thời tiết đêm nay và ngày mai 20/04/2023">
-                            <div class="media-body">
-                                <h5 class="mt-0 mb-1">Dự báo thời tiết đêm nay và ngày mai 20/04/2023</h5>
-                            </div>
-                            <a rel="nofollow" href="/du-bao-thoi-tiet-dem-nay-va-ngay-mai-20-04-2023-wokpcpduxgk.html" class="top-news-link"></a>
-                        </li>
-                        <li class="media my-1 pb-2 list-top-new-items">
-                            <img src="https://file.thoitiet.edu.vn/thoitietedu/2023/4/18/du-bao-thoi-tiet-dem-nay-va-ngay-mai-ngay-19-04-2023.jpg" class="me-3" alt="Dự báo thời tiết đêm nay và ngày mai 19/04/2023">
-                            <div class="media-body">
-                                <h5 class="mt-0 mb-1">Dự báo thời tiết đêm nay và ngày mai 19/04/2023</h5>
-                            </div>
-                            <a rel="nofollow" href="/du-bao-thoi-tiet-dem-nay-va-ngay-mai-19-04-2023-kdlzckluxvq.html" class="top-news-link"></a>
-                        </li>
+                    <ul id="hot_news" class="list-unstyled list-top-news">
+                        <!-- News Display here-->
                     </ul>
                 </div>
 
@@ -442,3 +391,4 @@
 
 <!-- import file js-->
 <script src="~/WeatherServices/CurrentWeatherDetail.js"></script>
+<script src="~/NewsServices/News.js"></script>

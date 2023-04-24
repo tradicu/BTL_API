@@ -13,5 +13,10 @@ namespace BTL_api.Controllers
         {
             return View();
         }
+        public ActionResult Detail(int id)
+        {
+            ViewBag.index = id;
+            return View();
+        }
     }
 }

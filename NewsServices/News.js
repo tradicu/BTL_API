@@ -4,8 +4,7 @@
         method: "GET",
         dataType: "json",
         success: function (data) {
-            console.log(data);
-            strHTML = ``;
+            var news_ul = document.getElementById('hot_news');
             // Xử lí dữ liệu
             for (let i = 0; i < 3; i++) {
                 var title = data.articles[i].title;
@@ -15,11 +14,10 @@
                             <div class="media-body">
                                 <h5 class="mt-0 mb-1">${title} </h5>
                             </div>
-                            <a href="#" class="top-news-link"></a>
+                            <a href="/TinTuc/Detail?id=${i}" class="top-news-link"></a>
                         </li>`;
-                strHTML += str;
+                news_ul.insertAdjacentHTML('beforeend', str);
             }
-            $("#hot_news").html(strHTML);
         },
         error: function () {
             alert("Không thể lấy News!");
